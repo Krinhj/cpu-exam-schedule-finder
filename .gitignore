@@ -19,6 +19,11 @@ pids
 lib-cov
 SQL Queries/
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Coverage directory used by tools like istanbul
 coverage
 *.lcov
