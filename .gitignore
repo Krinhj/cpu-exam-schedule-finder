@@ -19,6 +19,9 @@ pids
 lib-cov
 SQL Queries/
 
+#Directory for Claude Code
+.claude
+
 # Environment variables
 .env
 .env.local
