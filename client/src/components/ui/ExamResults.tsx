@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CalendarDays, Clock, MapPin, User } from "lucide-react";
+import { format } from "date-fns";
 import type { ExamSchedule } from "../../types/exam";
 
 export default function ExamResults() {
@@ -20,6 +21,35 @@ export default function ExamResults() {
             proctor: "Prof. Ganza, P"
         }
     ];
+
+    // Format date from "2025-08-28" to "August 28, 2025"
+    const formatExamDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return format(date, "MMMM dd, yyyy");
+    };
+
+    // Format time from "0700-0830" to "7:00-8:30 AM"
+    const formatExamTime = (timeString: string) => {
+        const [startTime, endTime] = timeString.split('-');
+        const formatTime = (time: string) => {
+            const hour = parseInt(time.substring(0, 2));
+            const minute = time.substring(2);
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+            return `${displayHour}:${minute}`;
+        };
+        
+        const start = formatTime(startTime);
+        const end = formatTime(endTime);
+        const startPeriod = parseInt(startTime.substring(0, 2)) >= 12 ? 'PM' : 'AM';
+        const endPeriod = parseInt(endTime.substring(0, 2)) >= 12 ? 'PM' : 'AM';
+        
+        if (startPeriod === endPeriod) {
+            return `${start}-${end} ${endPeriod}`;
+        } else {
+            return `${start} ${startPeriod}-${end} ${endPeriod}`;
+        }
+    };
 
     return (
         <div className="mt-15">
@@ -48,7 +78,7 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Exam Date
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{mockResults[0].examDate}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamDate(mockResults[0].examDate)}</h1>
                         </div>
 
                     </div>
@@ -68,7 +98,7 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Exam Time
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{mockResults[0].examTimeSlot}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamTime(mockResults[0].examTimeSlot)}</h1>
                         </div>
                     </div>
                     <div className="space-y-2 px-4 py-4 bg-amber-100 rounded-sm flex items-center">
