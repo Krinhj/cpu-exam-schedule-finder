@@ -36,6 +36,16 @@
   background-color: #f5f1ea;
 }
 
+/* Button shadow effects */
+.cpu-button-shadow {
+  box-shadow: 0 4px 6px -1px rgba(107, 114, 128, 0.1), 0 2px 4px -1px rgba(107, 114, 128, 0.06);
+  transition: box-shadow 0.3s ease;
+}
+
+.cpu-button-shadow:hover {
+  box-shadow: 0 4px 6px -1px rgba(250, 204, 21, 0.3), 0 2px 4px -1px rgba(250, 204, 21, 0.1);
+}
+
 /* Sonner toast close button positioning */
 .sonner-close-button-right {
   position: absolute !important;

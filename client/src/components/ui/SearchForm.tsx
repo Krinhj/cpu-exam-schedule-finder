@@ -47,13 +47,13 @@ export default function SearchForm() {
     };
 
     return (
-        <div className="rounded-md bg-white border py-12 px-10 shadow-md">
+        <div className="rounded-md bg-white border border-gray-100 py-12 px-10 shadow-md">
             <form onSubmit={handleSubmit} className="space-y-6">
             <h1 className="text-3xl font-bold text-center cpu-text cpu-blue"><BookOpenText className="w-8 h-8 inline mr-2" />CPU Exam Schedule Finder</h1>
             <h3 className="text-xl text-gray-400 font-medium text-center cpu-text">Find your exam schedule and room assignment quickly and easily</h3>
             {/* Form Fields */}
             {/* First row - Dropdowns */}
-            <div className="grid grid-cols-3 gap-4 bg-cpu-beige px-4 py-4 rounded-md">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-cpu-beige px-2 md:px-4 py-4 rounded-md">
                 {/* School Year Dropdown */}
                 <div className="space-y-2">
                     <label className="block text-sm font-bold cpu-text cpu-blue">
@@ -90,7 +90,7 @@ export default function SearchForm() {
                 </div>
             </div>
             {/* Second row - Text Inputs */}
-            <div className="grid grid-cols-4 gap-4 bg-amber-100 px-4 py-4 rounded-md">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-amber-100 px-2 md:px-4 py-4 rounded-md">
                 {/*Subject Code Text Entry*/}
                 <div className="space-y-2">
                     <label className="block text-sm font-bold cpu-text cpu-blue">
@@ -149,7 +149,7 @@ export default function SearchForm() {
                 </div>
             </div>
             {/* Submit Button */}
-            <button type="submit" className="w-full cpu-blue-bg text-white py-3 px-6 rounded-lg cpu-text font-semibold cursor-pointer">
+            <button type="submit" className="w-full cpu-blue-bg text-white py-3 px-6 rounded-lg cpu-text font-semibold cursor-pointer cpu-button-shadow">
                 <Search className="w-5 h-5 inline mr-2" />
                 Find My Exam Schedule
             </button>

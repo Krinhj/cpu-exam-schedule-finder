@@ -56,11 +56,13 @@ export default function ExamResults() {
             <div className="flex justify-between items-center">
                 {/* Exam Results Text*/}
                 <h1 className="cpu-text cpu-blue text-2xl font-semibold">Exam Schedule Results</h1>
-                <h1 className="cpu-text cpu-blue text-center text-xl font-semibold rounded-3xl bg-cpu-gold px-3 py-2">{mockResults.length} Results Found</h1>
+                <h1 className="cpu-text cpu-blue text-center text-xl font-semibold rounded-3xl bg-cpu-gold px-3 py-2">
+                    {mockResults.length} Result{mockResults.length !== 1 ? 's' : ''} Found
+                </h1>
             </div>
             
             {/* Main Exam Results Container*/}
-            <div className="rounded-md bg-white border px-10 py-12 mt-6">
+            <div className="rounded-md bg-white border border-gray-100 px-10 py-12 mt-6 shadow-md">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="cpu-text cpu-blue text-3xl font-semibold">{mockResults[0].subjectCode}</h1>
                     {/* Exam Type and Semester Badges */}
@@ -70,7 +72,7 @@ export default function ExamResults() {
                     </div>
                 </div>
                 {/* 4 Card Grid Layout */}
-                <div className="grid grid-cols-2 gap-4 mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                     {/* First Row*/}
                     <div className="space-y-2 px-4 py-4 bg-cpu-beige rounded-sm flex items-center">
                         <CalendarDays className="cpu-text w-5 h-5 mr-3 flex-shrink-0" />
@@ -115,7 +117,7 @@ export default function ExamResults() {
                 {/* Class Information Section*/}
                 <div className="mt-5">
                     <h1 className="cpu-text font-medium">Class Information</h1>
-                    <div className="grid grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 mt-5">
                         <div className="space-y-2">
                             <label className="cpu-text cpu-blue font-bold">
                                 Teacher: 
