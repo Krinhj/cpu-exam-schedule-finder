@@ -55,6 +55,8 @@ app.get("/api/exam-schedule", async (req, res) => {
       });
     }
 
+    console.log("Starting database query...");
+    
     const { data, error } = await supabase
       .from("class_rows")
       .select(
@@ -75,11 +77,21 @@ app.get("/api/exam-schedule", async (req, res) => {
       .eq("class_time", class_time)
       .eq("class_days", class_days)
       .eq("teacher", teacher)
-      .single();
+      .limit(1);
 
-    if (error) throw error;
+    console.log("Database query completed");
 
-    if (!data) {
+    if (error) {
+      console.log('Database error:', error);
+      throw error;
+    }
+
+    // Debug: Log what the database actually returned
+    console.log('Raw data type:', typeof data);
+    console.log('Raw data length:', data?.length);
+    console.log("Database response:", JSON.stringify(data, null, 2));
+
+    if (!data || data.length === 0) {
       return res.status(404).json({
         success: false,
         message: "No exam schedule found for the given parameters",
@@ -87,12 +99,13 @@ app.get("/api/exam-schedule", async (req, res) => {
     }
 
     // Transform the response to match the desired format
+    // Since we're using .limit(1), data is an array, so we need data[0]
     const examSchedule = {
-      exam_date: data.subjects.time_blocks.exam_date,
-      start_time: data.subjects.time_blocks.start_time,
-      end_time: data.subjects.time_blocks.end_time,
-      exam_room: data.exam_room,
-      proctor: data.proctor,
+      exam_date: data[0].subjects.time_blocks.exam_date,
+      start_time: data[0].subjects.time_blocks.start_time,
+      end_time: data[0].subjects.time_blocks.end_time,
+      exam_room: data[0].exam_room,
+      proctor: data[0].proctor,
     };
 
     res.json({

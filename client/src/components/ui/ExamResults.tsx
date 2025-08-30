@@ -1,26 +1,12 @@
-import { useState } from "react";
 import { CalendarDays, Clock, MapPin, User } from "lucide-react";
 import { format } from "date-fns";
 import type { ExamSchedule } from "../../types/exam";
 
-export default function ExamResults() {
-    const [results, setResults] = useState<ExamSchedule[]>([]);
-    const mockResults: ExamSchedule[] = [
-        {
-            id: "1",
-            schoolYear: "2025-2026",
-            semester: "First",
-            examType: "Prelim",
-            subjectCode: "ELS 2227",
-            classTime: "1300-1430",
-            classDays: "MWF",
-            teacher: "Prof. Parcia, G",
-            examDate: "2025-08-28",
-            examTimeSlot: "0700-0830",
-            room: "LHB102",
-            proctor: "Prof. Ganza, P"
-        }
-    ];
+interface ExamResultsProps {
+    results: ExamSchedule[];
+}
+
+export default function ExamResults({ results }: ExamResultsProps) {
 
     // Format date from "2025-08-28" to "August 28, 2025"
     const formatExamDate = (dateString: string) => {
@@ -53,22 +39,22 @@ export default function ExamResults() {
 
     return (
         <div className="mt-15">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
                 {/* Exam Results Text*/}
-                <h1 className="cpu-text cpu-blue text-2xl font-semibold">Exam Schedule Results</h1>
-                <h1 className="cpu-text cpu-blue text-center text-xl font-semibold rounded-3xl bg-cpu-gold px-3 py-2">
-                    {mockResults.length} Result{mockResults.length !== 1 ? 's' : ''} Found
+                <h1 className="cpu-text cpu-blue text-xl sm:text-2xl font-semibold text-center sm:text-left">Exam Schedule Results</h1>
+                <h1 className="cpu-text cpu-blue text-center text-sm sm:text-xl font-semibold rounded-3xl bg-cpu-gold px-3 py-2 self-center sm:self-auto">
+                    {results.length} Result{results.length !== 1 ? 's' : ''} Found
                 </h1>
             </div>
             
             {/* Main Exam Results Container*/}
-            <div className="rounded-md bg-white border border-gray-100 px-10 py-12 mt-6 shadow-md">
-                <div className="flex justify-between items-center mb-4">
-                    <h1 className="cpu-text cpu-blue text-3xl font-semibold">{mockResults[0].subjectCode}</h1>
+            <div className="rounded-md bg-white border border-gray-100 px-4 sm:px-10 py-6 sm:py-12 mt-6 shadow-md">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-4">
+                    <h1 className="cpu-text cpu-blue text-2xl sm:text-3xl font-semibold text-center sm:text-left">{results[0].subjectCode}</h1>
                     {/* Exam Type and Semester Badges */}
-                    <div className="flex justify-between items-center gap-4">
-                        <h3 className="cpu-text cpu-blue text-center text-sm font-semibold rounded-3xl border px-2 py-1">{mockResults[0].examType}</h3>
-                        <h3 className="cpu-text cpu-blue text-center text-sm font-semibold rounded-3xl bg-cpu-gold px-2 py-1">{mockResults[0].semester} Semester {mockResults[0].schoolYear}</h3>
+                    <div className="flex justify-center sm:justify-end items-center gap-2 sm:gap-4">
+                        <h3 className="cpu-text cpu-blue text-center text-xs sm:text-sm font-semibold rounded-3xl border px-2 py-1">{results[0].examType}</h3>
+                        <h3 className="cpu-text cpu-blue text-center text-xs sm:text-sm font-semibold rounded-3xl bg-cpu-gold px-2 py-1">{results[0].semester} Semester {results[0].schoolYear}</h3>
                     </div>
                 </div>
                 {/* 4 Card Grid Layout */}
@@ -80,7 +66,7 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Exam Date
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamDate(mockResults[0].examDate)}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamDate(results[0].examDate)}</h1>
                         </div>
 
                     </div>
@@ -90,7 +76,7 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Room
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{mockResults[0].room}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{results[0].room}</h1>
                         </div>
                     </div>
                     {/* Second Row*/}
@@ -100,7 +86,7 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Exam Time
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamTime(mockResults[0].examTimeSlot)}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{formatExamTime(results[0].examTimeSlot)}</h1>
                         </div>
                     </div>
                     <div className="space-y-2 px-4 py-4 bg-amber-100 rounded-sm flex items-center">
@@ -109,32 +95,32 @@ export default function ExamResults() {
                             <label className="block text-md text-gray-600 font-medium cpu-text">
                                 Proctor
                             </label>
-                            <h1 className="cpu-text cpu-blue font-bold text-xl">{mockResults[0].proctor}</h1>
+                            <h1 className="cpu-text cpu-blue font-bold text-xl">{results[0].proctor}</h1>
                         </div>
                     </div>
                 </div>
                 <hr className="mt-5 border-gray-400" />
                 {/* Class Information Section*/}
                 <div className="mt-5">
-                    <h1 className="cpu-text font-medium">Class Information</h1>
+                    <h1 className="cpu-text font-medium text-center sm:text-left">Class Information</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 mt-5">
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-center sm:text-left">
                             <label className="cpu-text cpu-blue font-bold">
                                 Teacher: 
                             </label>
-                            <h1 className="cpu-text font-extralight inline"> {mockResults[0].teacher}</h1>
+                            <h1 className="cpu-text font-extralight inline"> {results[0].teacher}</h1>
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-center sm:text-left">
                             <label className="cpu-text cpu-blue font-bold">
                                 Class Time: 
                             </label>
-                            <h1 className="cpu-text font-extralight inline"> {mockResults[0].classTime}</h1>
+                            <h1 className="cpu-text font-extralight inline"> {results[0].classTime}</h1>
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-center sm:text-left">
                             <label className="cpu-text cpu-blue font-bold">
                                 Class Days: 
                             </label>
-                            <h1 className="cpu-text font-extralight inline"> {mockResults[0].classDays}</h1>
+                            <h1 className="cpu-text font-extralight inline"> {results[0].classDays}</h1>
                         </div>
                     </div>
                 </div>
