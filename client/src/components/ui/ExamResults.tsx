@@ -36,7 +36,7 @@ const formatExamTime = (timeString: string) => {
 };
 
 // Room-only subject card component
-function RoomOnlyCard({ examSchedule, index }: { examSchedule: ExamSchedule; index: number }) {
+function RoomOnlyCard({ examSchedule }: { examSchedule: ExamSchedule; index: number }) {
     return (
         <div className="rounded-md bg-white border border-gray-100 px-4 sm:px-10 py-6 sm:py-12 shadow-md">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-4">

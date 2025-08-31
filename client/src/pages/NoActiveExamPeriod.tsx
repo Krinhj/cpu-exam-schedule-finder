@@ -1,4 +1,4 @@
-import { Calendar, RefreshCw, Clock } from 'lucide-react';
+import { Calendar, RefreshCw } from 'lucide-react';
 
 interface NoActiveExamPeriodPageProps {
     onRetry: () => void;

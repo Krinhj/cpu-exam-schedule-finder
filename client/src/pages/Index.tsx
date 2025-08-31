@@ -96,11 +96,7 @@ export default function Index() {
         }, 100);
     };
 
-    const handleNoResults = () => {
-        setExamResults([]);
-        setShowResults(false);
-        setNoResultsFound(true);
-    };
+    // Removed handleNoResults - functionality moved to handleSearchResults
 
     const handleReset = () => {
         setExamResults([]);

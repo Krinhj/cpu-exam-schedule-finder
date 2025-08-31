@@ -28,7 +28,7 @@ export default function SearchForm({ onSearchResults, onReset, resetTrigger, act
         teacher: '',
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
 
     // Validation functions
     const validateSubjectCode = (code: string) => {

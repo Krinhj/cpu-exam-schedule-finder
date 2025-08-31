@@ -127,6 +127,7 @@ app.get("/api/exam-schedule", async (req, res) => {
         end_time: subjectData[0].time_blocks.end_time,
         exam_room: subjectData[0].room_list,
         proctor: "N/A - Room Only Subject",
+        subject_code: subjectData[0].subject_code, // Include properly formatted subject code from database
         is_room_only: true
       };
 

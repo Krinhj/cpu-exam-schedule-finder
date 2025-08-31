@@ -1,4 +1,4 @@
-import { RefreshCw, Database, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Database } from 'lucide-react';
 
 interface DatabaseDownPageProps {
     onRetry: () => void;
