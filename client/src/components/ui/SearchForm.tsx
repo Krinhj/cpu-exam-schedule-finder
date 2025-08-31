@@ -47,8 +47,8 @@ export default function SearchForm({ onSearchResults, onReset, resetTrigger, act
     };
 
     const validateTeacher = (teacher: string) => {
-        // Allows "Prof. LastName, F." or "LastName, F."
-        return teacher.trim().length > 3 && teacher.includes(',');
+        // More lenient - allows any teacher name format with minimum length
+        return teacher.trim().length >= 2;
     };
 
     // Initialize form data with active exam period on component mount
@@ -129,11 +129,11 @@ export default function SearchForm({ onSearchResults, onReset, resetTrigger, act
 
             // Transform API results to ExamSchedule format
             const examSchedules: ExamSchedule[] = result.data.map((item, index) => ({
-                id: `${formData.subjectCode}-${Date.now()}-${index}`,
+                id: `${item.subject_code || formData.subjectCode}-${Date.now()}-${index}`,
                 schoolYear: formData.schoolYear,
                 semester: formData.semester as 'First' | 'Second',
                 examType: formData.examType as 'Prelim' | 'Midterm' | 'Final',
-                subjectCode: formData.subjectCode,
+                subjectCode: item.subject_code || formData.subjectCode,
                 classTime: item.class_time || formData.classTime || 'N/A',
                 classDays: item.class_days || formData.classDays || 'N/A',
                 teacher: item.teacher || formData.teacher || 'N/A',
@@ -149,11 +149,12 @@ export default function SearchForm({ onSearchResults, onReset, resetTrigger, act
             // Success toast
             const resultCount = examSchedules.length;
             const isRoomOnly = result.is_room_only;
+            const displaySubjectCode = examSchedules[0]?.subjectCode || formData.subjectCode;
             
             toast.success('Exam Schedule Found!', {
                 description: isRoomOnly 
-                    ? `Found room assignments for ${formData.subjectCode}`
-                    : `Found ${resultCount} exam schedule${resultCount > 1 ? 's' : ''} for ${formData.subjectCode}`,
+                    ? `Found room assignments for ${displaySubjectCode}`
+                    : `Found ${resultCount} exam schedule${resultCount > 1 ? 's' : ''} for ${displaySubjectCode}`,
                 duration: 3000,
                 className: 'cpu-text',
                 closeButton: true,
@@ -298,7 +299,7 @@ export default function SearchForm({ onSearchResults, onReset, resetTrigger, act
                         value={formData.teacher}
                         onChange={(e) => handleInputChange('teacher', e.target.value)}
                         className="w-full px-3 py-2 bg-gray-50 border-gray-300 rounded-md cpu-text focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="e.g., Prof. Doe, J."
+                        placeholder="e.g., Smith, Dr. Jones, or Garcia"
                     />
                 </div>
             </div>

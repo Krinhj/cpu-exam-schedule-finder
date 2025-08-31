@@ -201,6 +201,7 @@ app.get("/api/exam-schedule", async (req, res) => {
       end_time: row.subjects.time_blocks.end_time,
       exam_room: row.exam_room,
       proctor: row.proctor,
+      subject_code: row.subjects.subject_code,
       class_time: row.class_time,
       class_days: row.class_days,
       teacher: row.teacher,

@@ -4,6 +4,7 @@ interface ApiResponseItem {
     end_time: string;
     exam_room: string;
     proctor: string;
+    subject_code?: string;
     class_time?: string;
     class_days?: string;
     teacher?: string;
