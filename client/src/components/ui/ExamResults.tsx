@@ -18,7 +18,6 @@ const formatExamTime = (timeString: string) => {
     const formatTime = (time: string) => {
         const hour = parseInt(time.substring(0, 2));
         const minute = time.substring(2);
-        const period = hour >= 12 ? 'PM' : 'AM';
         const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
         return `${displayHour}:${minute}`;
     };
