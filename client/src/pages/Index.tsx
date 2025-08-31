@@ -1,16 +1,85 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchForm from '../components/ui/SearchForm';
 import DisclaimerSection from '../components/ui/DisclaimerSection';
+import Footer from '../components/ui/Footer';
+import DatabaseDownPage from './DatabaseDown';
+import NoActiveExamPeriodPage from './NoActiveExamPeriod';
 import { SquareArrowOutUpRight, Bug, BookOpen } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import ExamResults from '../components/ui/ExamResults';
+import { ApiService } from '../services/api';
 import type { ExamSchedule } from '../types/exam';
+
+interface ActiveExamPeriod {
+    school_year: string;
+    semester: string;
+    exam_type: string;
+}
 
 export default function Index() {
     const [examResults, setExamResults] = useState<ExamSchedule[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [noResultsFound, setNoResultsFound] = useState(false);
     const [resetTrigger, setResetTrigger] = useState(0);
+    
+    // App state management
+    const [activeExamPeriod, setActiveExamPeriod] = useState<ActiveExamPeriod | null>(null);
+    const [isLoadingActivePeriod, setIsLoadingActivePeriod] = useState(true);
+    const [isDatabaseDown, setIsDatabaseDown] = useState(false);
+    const [noActiveExamPeriod, setNoActiveExamPeriod] = useState(false);
+    const [isRetrying, setIsRetrying] = useState(false);
+
+    // Fetch active exam period function
+    const fetchActiveExamPeriod = async (isRetryAttempt = false) => {
+        try {
+            if (isRetryAttempt) {
+                setIsRetrying(true);
+            } else {
+                setIsLoadingActivePeriod(true);
+            }
+            
+            // TEMPORARY: For testing Database Down page - uncomment next line
+            // throw new Error('Network error occurred');
+            
+            const result = await ApiService.getActiveExamPeriod();
+            setActiveExamPeriod(result.data);
+            setIsDatabaseDown(false);
+            setNoActiveExamPeriod(false);
+        } catch (error: any) {
+            console.error('Failed to fetch active exam period:', error);
+            
+            // Distinguish between different error types
+            if (error.status === 404) {
+                // No active exam period found - this is normal between exam periods
+                setNoActiveExamPeriod(true);
+                setIsDatabaseDown(false);
+            } else if (error.status === 0 || error.status === 500 || error.message === 'Network error occurred') {
+                // Network error, server error, or test error - database is likely down
+                setIsDatabaseDown(true);
+                setNoActiveExamPeriod(false);
+            } else {
+                // Default to database down for any other errors
+                setIsDatabaseDown(true);
+                setNoActiveExamPeriod(false);
+            }
+        } finally {
+            if (isRetryAttempt) {
+                setIsRetrying(false);
+            } else {
+                setIsLoadingActivePeriod(false);
+            }
+        }
+    };
+
+    // Fetch active exam period on component mount
+    useEffect(() => {
+        fetchActiveExamPeriod();
+    }, []);
+
+    // Retry function for error pages
+    const handleRetry = () => {
+        fetchActiveExamPeriod(true);
+    };
 
     const handleSearchResults = (results: ExamSchedule[]) => {
         setExamResults(results);
@@ -41,6 +110,121 @@ export default function Index() {
         setResetTrigger(Date.now());
     };
 
+    // Show loading state while checking active exam period
+    if (isLoadingActivePeriod) {
+        return (
+            <div className="min-h-screen cpu-beige flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-pulse">
+                        <h1 className="text-2xl font-bold cpu-text cpu-blue">
+                            Loading Exam Schedule Finder...
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show appropriate error page based on the error type
+    if (isDatabaseDown) {
+        return (
+            <div className="min-h-screen cpu-beige py-8">
+                <Toaster position="bottom-right" richColors />
+                <div className="max-w-6xl mx-auto px-2 sm:px-4 space-y-4 sm:space-y-6">
+                    <DisclaimerSection />
+                    <div className="flex justify-center gap-4">
+                        <a 
+                            href="https://cpu.edu.ph" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="cpu-text cpu-blue">
+                            <button className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-cpu-gold cpu-text text-sm font-medium cpu-blue cursor-pointer">
+                                <SquareArrowOutUpRight className="w-4 h-4 mr-2" />Visit the official CPU website
+                            </button>
+                        </a>
+                        <button
+                            onClick={() => {
+                                toast('Bug Report', {
+                                    description: 'Please email your bug report to examschedulefinder@gmail.com with details about the issue.',
+                                    duration: 8000,
+                                    closeButton: true,
+                                    className: 'cpu-text',
+                                    style: {
+                                        color: '#1e3a8a',
+                                        fontFamily: 'Consolas, Monaco, Menlo, Ubuntu Mono, monospace'
+                                    },
+                                    classNames: {
+                                        closeButton: 'sonner-close-button-right'
+                                    }
+                                });
+                            }}
+                            className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-cpu-gold cpu-text text-sm font-medium cpu-blue cursor-pointer"
+                        >
+                            <Bug className="w-4 h-4 mr-2" />
+                            Report Bug or Issue
+                        </button>
+                    </div>
+                </div>
+                <div className="mt-6">
+                    <DatabaseDownPage onRetry={handleRetry} isRetrying={isRetrying} />
+                </div>
+                <div className="mt-6">
+                    <Footer />
+                </div>
+            </div>
+        );
+    }
+
+    if (noActiveExamPeriod) {
+        return (
+            <div className="min-h-screen cpu-beige py-8">
+                <Toaster position="bottom-right" richColors />
+                <div className="max-w-6xl mx-auto px-2 sm:px-4 space-y-4 sm:space-y-6">
+                    <DisclaimerSection />
+                    <div className="flex justify-center gap-4">
+                        <a 
+                            href="https://cpu.edu.ph" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="cpu-text cpu-blue">
+                            <button className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-cpu-gold cpu-text text-sm font-medium cpu-blue cursor-pointer">
+                                <SquareArrowOutUpRight className="w-4 h-4 mr-2" />Visit the official CPU website
+                            </button>
+                        </a>
+                        <button
+                            onClick={() => {
+                                toast('Bug Report', {
+                                    description: 'Please email your bug report to examschedulefinder@gmail.com with details about the issue.',
+                                    duration: 8000,
+                                    closeButton: true,
+                                    className: 'cpu-text',
+                                    style: {
+                                        color: '#1e3a8a',
+                                        fontFamily: 'Consolas, Monaco, Menlo, Ubuntu Mono, monospace'
+                                    },
+                                    classNames: {
+                                        closeButton: 'sonner-close-button-right'
+                                    }
+                                });
+                            }}
+                            className="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-cpu-gold cpu-text text-sm font-medium cpu-blue cursor-pointer"
+                        >
+                            <Bug className="w-4 h-4 mr-2" />
+                            Report Bug or Issue
+                        </button>
+                    </div>
+                </div>
+                <div className="mt-6">
+                    <NoActiveExamPeriodPage onRetry={handleRetry} isRetrying={isRetrying} />
+                </div>
+                <div className="mt-6">
+                    <Footer />
+                </div>
+            </div>
+        );
+    }
+
+    // Normal operation - show main search form
     return (
         <div className="min-h-screen cpu-beige py-8">
             <Toaster position="bottom-right" richColors />
@@ -79,7 +263,12 @@ export default function Index() {
                         Report Bug or Issue
                     </button>
                 </div>
-                <SearchForm onSearchResults={handleSearchResults} onReset={handleReset} resetTrigger={resetTrigger} />
+                <SearchForm 
+                    onSearchResults={handleSearchResults} 
+                    onReset={handleReset} 
+                    resetTrigger={resetTrigger}
+                    activeExamPeriod={activeExamPeriod!} 
+                />
                 {showResults && (
                     <div id="exam-results">
                         <ExamResults results={examResults} />
@@ -123,6 +312,7 @@ export default function Index() {
                         </div>
                     </div>
                 )}
+                <Footer />
             </div>
         </div>
     )

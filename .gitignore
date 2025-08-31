@@ -22,6 +22,9 @@ SQL Queries/
 #Directory for Claude Code
 .claude
 
+#Admin Upload
+admin-upload
+
 # Environment variables
 .env
 .env.local

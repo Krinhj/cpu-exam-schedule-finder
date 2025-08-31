@@ -52,7 +52,7 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-2 bg-cpu-beige border border-gray-300 rounded-md cpu-text focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer flex justify-between items-center"
+        className="w-full px-3 py-2 bg-cpu-beige border border-gray-300 rounded-md cpu-text focus:ring-2 focus:ring-blue-800 focus:border-blue-800 cursor-pointer flex justify-between items-center"
       >
         <span className={selectedOption ? "cpu-blue" : "text-gray-500"}>
           {selectedOption ? selectedOption.label : placeholder}

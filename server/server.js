@@ -42,25 +42,109 @@ app.get("/api/test", async (req, res) => {
   }
 });
 
+// Endpoint to get the active exam period
+app.get("/api/active-exam-period", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("exam_periods")
+      .select("school_year, semester, exam_type")
+      .eq("is_active", true)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No active exam period found
+        return res.status(404).json({
+          success: false,
+          message: "No active exam period found",
+        });
+      }
+      throw error;
+    }
+
+    res.json({
+      success: true,
+      data: {
+        school_year: data.school_year,
+        semester: data.semester,
+        exam_type: data.exam_type
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching active exam period",
+      error: error.message,
+    });
+  }
+});
+
 // Endpoint to get exam schedule details
 app.get("/api/exam-schedule", async (req, res) => {
   try {
     const { subject_code, class_time, class_days, teacher } = req.query;
 
-    // Validate required parameters
-    if (!subject_code || !class_time || !class_days || !teacher) {
+    // Validate required parameters - only subject_code is required
+    if (!subject_code) {
       return res.status(400).json({
         success: false,
-        message: "Missing required parameters",
+        message: "Subject code is required",
       });
     }
 
-    console.log("Starting database query...");
-    
-    const { data, error } = await supabase
+    console.log("Starting flexible database query for:", { subject_code, class_time, class_days, teacher });
+
+    // First, check if this is a room-only subject in the active exam period
+    const { data: subjectData, error: subjectError } = await supabase
+      .from("subjects")
+      .select(`
+        subject_code,
+        is_room_only,
+        room_list,
+        time_blocks!inner (
+          exam_date,
+          start_time,
+          end_time,
+          exam_periods!inner (
+            is_active
+          )
+        )
+      `)
+      .ilike("subject_code", subject_code)
+      .eq("time_blocks.exam_periods.is_active", true);
+
+    if (subjectError) {
+      console.log('Subject query error:', subjectError);
+      throw subjectError;
+    }
+
+    // Handle room-only subjects
+    if (subjectData && subjectData.length > 0 && subjectData[0].is_room_only) {
+      console.log("Found room-only subject");
+      const roomOnlySchedule = {
+        exam_date: subjectData[0].time_blocks.exam_date,
+        start_time: subjectData[0].time_blocks.start_time,
+        end_time: subjectData[0].time_blocks.end_time,
+        exam_room: subjectData[0].room_list,
+        proctor: "N/A - Room Only Subject",
+        is_room_only: true
+      };
+
+      return res.json({
+        success: true,
+        data: [roomOnlySchedule], // Return as array for consistency
+        total_results: 1,
+        is_room_only: true
+      });
+    }
+
+    // For regular subjects, build flexible query for active exam period only
+    let query = supabase
       .from("class_rows")
-      .select(
-        `
+      .select(`
+        class_time,
+        class_days,
+        teacher,
         exam_room,
         proctor,
         subjects!inner (
@@ -68,16 +152,31 @@ app.get("/api/exam-schedule", async (req, res) => {
           time_blocks!inner (
             exam_date,
             start_time,
-            end_time
+            end_time,
+            exam_periods!inner (
+              is_active
+            )
           )
         )
-      `
-      )
-      .eq("subjects.subject_code", subject_code)
-      .eq("class_time", class_time)
-      .eq("class_days", class_days)
-      .eq("teacher", teacher)
-      .limit(1);
+      `)
+      .ilike("subjects.subject_code", subject_code)
+      .eq("subjects.time_blocks.exam_periods.is_active", true);
+
+    // Add optional filters if provided
+    if (class_time) {
+      query = query.eq("class_time", class_time);
+    }
+    if (class_days) {
+      query = query.eq("class_days", class_days);
+    }
+    if (teacher) {
+      query = query.ilike("teacher", `%${teacher}%`); // Use case-insensitive partial match
+    }
+
+    // Limit results to prevent too many returns
+    query = query.limit(15);
+
+    const { data, error } = await query;
 
     console.log("Database query completed");
 
@@ -86,31 +185,33 @@ app.get("/api/exam-schedule", async (req, res) => {
       throw error;
     }
 
-    // Debug: Log what the database actually returned
-    console.log('Raw data type:', typeof data);
-    console.log('Raw data length:', data?.length);
-    console.log("Database response:", JSON.stringify(data, null, 2));
+    console.log(`Found ${data?.length || 0} results`);
 
     if (!data || data.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No exam schedule found for the given parameters",
+        message: "No exam schedules found for the given parameters",
       });
     }
 
-    // Transform the response to match the desired format
-    // Since we're using .limit(1), data is an array, so we need data[0]
-    const examSchedule = {
-      exam_date: data[0].subjects.time_blocks.exam_date,
-      start_time: data[0].subjects.time_blocks.start_time,
-      end_time: data[0].subjects.time_blocks.end_time,
-      exam_room: data[0].exam_room,
-      proctor: data[0].proctor,
-    };
+    // Transform multiple results
+    const examSchedules = data.map(row => ({
+      exam_date: row.subjects.time_blocks.exam_date,
+      start_time: row.subjects.time_blocks.start_time,
+      end_time: row.subjects.time_blocks.end_time,
+      exam_room: row.exam_room,
+      proctor: row.proctor,
+      class_time: row.class_time,
+      class_days: row.class_days,
+      teacher: row.teacher,
+      is_room_only: false
+    }));
 
     res.json({
       success: true,
-      data: examSchedule,
+      data: examSchedules,
+      total_results: examSchedules.length,
+      is_room_only: false
     });
   } catch (error) {
     res.status(500).json({

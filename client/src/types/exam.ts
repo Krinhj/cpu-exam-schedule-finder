@@ -11,6 +11,7 @@ export interface ExamSchedule {
     examTimeSlot: string;
     room: string;
     proctor: string;
+    isRoomOnly?: boolean; // New field for room-only subjects
 }
 
 export interface SearchFilters {
