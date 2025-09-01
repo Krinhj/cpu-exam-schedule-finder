@@ -1,69 +1,136 @@
-# React + TypeScript + Vite
+# CPU Exam Schedule Finder - Client Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The student-facing React frontend for the CPU Exam Schedule Finder.
 
-Currently, two official plugins are available:
+**Live Site:** [cpuexamfinder.vercel.app](https://cpuexamfinder.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Quick Start
 
-## Expanding the ESLint configuration
+```bash
+# Install dependencies
+npm install
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Start development server
+npm run dev
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Build for production
+npm run build
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔧 Environment Setup
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Create a `.env` file in the client directory:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_API_URL=http://localhost:3000
 ```
+
+For production (Vercel), set:
+```env
+VITE_API_URL=https://your-api-server.render.com
+```
+
+## 📝 Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production (TypeScript compilation + Vite build)
+- `npm run preview` - Preview the production build locally
+- `npm run lint` - Run ESLint for code quality checks
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/
+│   └── ui/                # Reusable UI components
+│       ├── SearchForm.tsx        # Main search form
+│       ├── ExamResults.tsx       # Results display
+│       ├── DisclaimerSection.tsx # App disclaimer
+│       ├── Footer.tsx            # Footer component
+│       └── CustomSelect.tsx      # Custom dropdown component
+├── pages/
+│   ├── Index.tsx              # Main application page
+│   ├── DatabaseDown.tsx       # Database error page
+│   └── NoActiveExamPeriod.tsx # No active exam period page
+├── services/
+│   └── api.ts                 # API service functions
+├── types/
+│   └── exam.ts               # TypeScript type definitions
+├── config/
+│   └── defaults.ts           # Default configuration values
+├── App.tsx                   # Root component
+└── main.tsx                  # Application entry point
+```
+
+## 🎨 Design System
+
+- **Colors:** CPU Blue (#1e3a8a), CPU Gold (#facc15), CPU Beige
+- **Typography:** Consolas monospace font family
+- **Icons:** Lucide React
+- **Styling:** Tailwind CSS 4 with custom utilities
+- **Responsive:** Mobile-first design approach
+
+## 📱 Key Features
+
+- **Smart Search Form** - Flexible search with required subject code
+- **Real-time Validation** - Form validation with user-friendly error messages
+- **Responsive Design** - Optimized for mobile, tablet, and desktop
+- **Error State Management** - Handles database down vs no results scenarios
+- **Toast Notifications** - User feedback using Sonner library
+- **CPU Branding** - Custom styling matching university identity
+
+## 🌐 Deployment (Vercel)
+
+1. **Connect to GitHub** - Link your repository to Vercel
+2. **Set Environment Variables:**
+   ```
+   VITE_API_URL=https://your-api-server.render.com
+   ```
+3. **Deploy** - Automatic deployments on git push to main branch
+
+### Build Configuration
+The project uses Vite with TypeScript compilation. Build output goes to `dist/` directory.
+
+## 🔌 API Integration
+
+The client communicates with the backend API through the `ApiService` class:
+
+- `getActiveExamPeriod()` - Fetch current exam period information
+- `searchExamSchedule(params)` - Search for exam schedules with filters
+
+API calls include proper error handling with specific error types for different scenarios.
+
+## 🛠️ Development Notes
+
+- **TypeScript** - Strict type checking enabled
+- **ESLint** - Code quality and consistency rules
+- **Hot Reload** - Instant updates during development
+- **Build Optimization** - Tree shaking and code splitting enabled
+- **Environment Variables** - Vite's `import.meta.env` for configuration
+
+## 🧪 Testing
+
+Currently no automated tests implemented. Manual testing covers:
+- Search functionality with various input combinations
+- Responsive design across different screen sizes
+- Error states and edge cases
+- Form validation and user feedback
+
+## 📦 Dependencies
+
+**Main Dependencies:**
+- React 19 - UI framework
+- TypeScript - Type safety
+- Tailwind CSS 4 - Styling
+- Lucide React - Icons
+- Sonner - Toast notifications
+- date-fns - Date formatting utilities
+- clsx - Conditional CSS classes
+
+**Dev Dependencies:**
+- Vite - Build tool
+- ESLint - Code linting
+- TypeScript compiler - Type checking

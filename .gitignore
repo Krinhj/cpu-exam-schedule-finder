@@ -19,10 +19,10 @@ pids
 lib-cov
 SQL Queries/
 
-#Directory for Claude Code
+# Directory for Claude Code
 .claude
 
-#Admin Upload
+# Admin Upload
 admin-upload
 
 # Environment variables
