@@ -70,7 +70,10 @@ A modern, searchable web application where students can:
 *Additional search results demonstrating flexible filtering capabilities*
 
 ### Mobile-Responsive Design
-![Mobile View](./assets/screenshots/MobileView.png)
+<div align="center">
+  <img src="./assets/screenshots/MobileView.png" alt="Mobile View" />
+</div>
+
 *Fully responsive interface optimized for mobile devices*
 
 ### Error State Handling
